@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  openbao:
+    image: ghcr.io/openbao/openbao:latest
+    container_name: openbao
+    ports:
+      - "8200:8200"  # Bao API and UI
+    volumes:
+      - ./config:/vault/config
+      - ./data:/vault/data
+    environment:
+      VAULT_ADDR: http://0.0.0.0:8200
+    command: server -config=/vault/config/config.hcl
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+
+volumes:
+  openbao_data:
+
