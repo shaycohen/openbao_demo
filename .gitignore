@@ -1,2 +1,9 @@
-certs/
-data/
+# Ignore certs and data inside postgrest_env
+postgrest_env/certs/
+postgrest_env/data/
+postgrest_env/postgres/certs/
+postgrest_env/postgres/postgres-data/
+
+# Ignore certs and data inside raft_env
+raft_env/certs/
+raft_env/data/

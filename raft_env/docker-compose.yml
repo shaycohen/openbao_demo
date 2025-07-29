@@ -1,0 +1,97 @@
+networks:
+  openbao_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
+
+services:
+  openbao1:
+    image: ghcr.io/openbao/openbao:latest
+    container_name: openbao1
+    hostname: openbao1
+    ports:
+      - "8200:8200"  # API/UI
+      - "8201:8201"  # Cluster port
+    volumes:
+      - ./config/node1.hcl:/vault/config/config.hcl
+      - ./data/node1:/vault/data
+      - ./certs/openbao1.crt:/vault/certs/openbao1.crt
+      - ./certs/openbao1.key:/vault/certs/openbao1.key
+      - ./certs/ca.crt:/vault/certs/ca.crt
+    environment:
+      VAULT_ADDR: https://openbao1:8200
+      VAULT_CACERT: /vault/certs/ca.crt
+    command: >
+      sh -c "
+        apk add --no-cache ca-certificates &&
+        cp /vault/certs/ca.crt /usr/local/share/ca-certificates/ca.crt &&
+        update-ca-certificates &&
+        bao server -config=/vault/config/config.hcl
+      "
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+    networks:
+      openbao_net:
+        ipv4_address: 172.25.0.2
+
+  openbao2:
+    image: ghcr.io/openbao/openbao:latest
+    container_name: openbao2
+    hostname: openbao2
+    ports:
+      - "8202:8200"  # API/UI
+      - "8203:8201"  # Cluster port
+    volumes:
+      - ./config/node2.hcl:/vault/config/config.hcl
+      - ./data/node2:/vault/data
+      - ./certs/openbao2.crt:/vault/certs/openbao2.crt
+      - ./certs/openbao2.key:/vault/certs/openbao2.key
+      - ./certs/ca.crt:/vault/certs/ca.crt
+    environment:
+      VAULT_ADDR: https://openbao2:8200
+      VAULT_CACERT: /vault/certs/ca.crt
+    command: >
+      sh -c "
+        apk add --no-cache ca-certificates &&
+        cp /vault/certs/ca.crt /usr/local/share/ca-certificates/ca.crt &&
+        update-ca-certificates &&
+        bao server -config=/vault/config/config.hcl
+      "
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+    networks:
+      openbao_net:
+        ipv4_address: 172.25.0.3
+
+  openbao3:
+    image: ghcr.io/openbao/openbao:latest
+    container_name: openbao3
+    hostname: openbao3
+    ports:
+      - "8204:8200"  # API/UI
+      - "8205:8201"  # Cluster port
+    volumes:
+      - ./config/node3.hcl:/vault/config/config.hcl
+      - ./data/node3:/vault/data
+      - ./certs/openbao3.crt:/vault/certs/openbao3.crt
+      - ./certs/openbao3.key:/vault/certs/openbao3.key
+      - ./certs/ca.crt:/vault/certs/ca.crt
+    environment:
+      VAULT_ADDR: https://openbao3:8200
+      VAULT_CACERT: /vault/certs/ca.crt
+    command: >
+      sh -c "
+        apk add --no-cache ca-certificates &&
+        cp /vault/certs/ca.crt /usr/local/share/ca-certificates/ca.crt &&
+        update-ca-certificates &&
+        bao server -config=/vault/config/config.hcl
+      "
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+    networks:
+      openbao_net:
+        ipv4_address: 172.25.0.4
